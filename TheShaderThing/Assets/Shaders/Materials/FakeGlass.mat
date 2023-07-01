@@ -70,7 +70,7 @@ Material:
     m_Floats:
     - _BlurDirections: 16
     - _BlurQuality: 3
-    - _BlurQualitySteps: 194
+    - _BlurQualitySteps: 283
     - _BlurRadius: 0.13
     - _BumpScale: 1
     - _ColorBias: 1
@@ -83,8 +83,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HQBlurRadius: 1.46
-    - _IQR: 0
+    - _HQBlurRadius: 0
+    - _IQR: 0.062
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1

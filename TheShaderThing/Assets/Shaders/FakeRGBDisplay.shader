@@ -2,10 +2,13 @@ Shader "RykerPack/FakeRGBDisplay"
 {
     Properties
     {
-        [Header(Texture map and options)][Space(15)]_MainTex ("Texture", 2D) = "white" {}
+        [Header(Texture map)][Space(15)]_MainTex ("Texture", 2D) = "white" {}
         [IntRange][Header(Fake Screen Options)][Space(15)]_PixelDensity ("Pixel Density", Range(1, 1000)) = 1
         [Range]_Overdrive ("Overdrive", Range(1, 5)) = 0
         [Range]_PixelHardness("Pixel Hardness", Range(0, 1)) = 1
+        [Header(Distance blending)][Space(15)][MaterialToggle]_DistanceBlendingToggle("Use Distance Blending?", int) = 1
+        _DistanceBlendingStart ("Distance Blending Start", float) = 50
+        _DistanceBlendingEnd ("Distance Blending End", float) = 100
         [Header(Red)][Space(15)][Range]_RedPixelDimensionX("Red Pixel Dimesnsion X axis", Range(0,1)) = 0.475
         [Range]_RedPixelDimensionY("Red Pixel Dimesnsion Y axis", Range(0,1)) = 0.975
         [Range]_RedPixelOffsetX("Red Pixel Offset X axis", Range(-0.5 ,0.5)) = 0.25
@@ -41,11 +44,16 @@ Shader "RykerPack/FakeRGBDisplay"
             {
                 float2 uv : TEXCOORD0;
                 float2 unUV : TEXCOORD1;
+                float dist : TEXCOORD2;
                 float4 vertex : SV_POSITION;
             };
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+
+            float _DistanceBlendingToggle;
+            float _DistanceBlendingStart;
+            float _DistanceBlendingEnd;
 
             float _PixelDensity;
             float _Overdrive;
@@ -70,8 +78,17 @@ Shader "RykerPack/FakeRGBDisplay"
                 return lerp(outputValue, round(outputValue) , blending);
             }
 
-            fixed checkColor(half2 uvPoint, float xOffset, float yOffset, float xScale, float yScale)
+            fixed checkColor(half2 uvPoint, float blendValue, float xOffset, float yOffset, float xScale, float yScale)
             {
+                if(_DistanceBlendingToggle == 1) {
+                    blendValue = blendValue - _DistanceBlendingStart;
+                    blendValue = blendValue / _DistanceBlendingEnd;
+                    blendValue = clamp(blendValue, 0, 1);
+                    xOffset = lerp(xOffset, 0, blendValue);
+                    xOffset = lerp(xOffset, 0, blendValue);
+                    xScale = lerp(xScale, 1, blendValue);
+                    yScale = lerp(yScale, 1, blendValue);
+                }
                 float2 localPoint = float2((uvPoint.x + (xOffset - 0.5)) / xScale, (uvPoint.y + (yOffset - 0.5)) / yScale);
 
                 if(localPoint.x > 0.5 || localPoint.x < -0.5)
@@ -84,16 +101,16 @@ Shader "RykerPack/FakeRGBDisplay"
                 return output;
             }
 
-            fixed4 applyScreenColor(float2 uvPoint, sampler2D Tex)
+            fixed4 applyScreenColor(float2 uvPoint, sampler2D Tex, float distance)
             {
                 float2 texturePoint = (floor(uvPoint * _PixelDensity) + 0.5) / _PixelDensity;
                 half2 localPoint = half2(frac(uvPoint.x * _PixelDensity), frac(uvPoint.y * _PixelDensity));
                 float4 textureColor = tex2D(Tex, texturePoint);
                 fixed4 Color = fixed4(0, 0, 0, 1);
 
-                Color.r = checkColor(localPoint, _RedPixelOffsetX, _RedPixelOffsetY, _RedPixelDimensionX, _RedPixelDimensionY) / 2;
-                Color.g = checkColor(localPoint, _GreenPixelOffsetX, _GreenPixelOffsetY, _GreenPixelDimensionX, _GreenPixelDimensionY);
-                Color.b = checkColor(localPoint, _BluePixelOffsetX, _BluePixelOffsetY, _BluePixelDimensionX, _BluePixelDimensionY);
+                Color.r = checkColor(localPoint, distance, _RedPixelOffsetX, _RedPixelOffsetY, _RedPixelDimensionX, _RedPixelDimensionY) / 2;
+                Color.g = checkColor(localPoint, distance, _GreenPixelOffsetX, _GreenPixelOffsetY, _GreenPixelDimensionX, _GreenPixelDimensionY);
+                Color.b = checkColor(localPoint, distance, _BluePixelOffsetX, _BluePixelOffsetY, _BluePixelDimensionX, _BluePixelDimensionY);
 
                 return Color * textureColor;
 
@@ -103,6 +120,8 @@ Shader "RykerPack/FakeRGBDisplay"
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
+                float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+                o.dist = mul(worldPos, UNITY_MATRIX_V).z;
                 o.unUV = v.uv;
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
@@ -111,7 +130,7 @@ Shader "RykerPack/FakeRGBDisplay"
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
-                fixed4 col = applyScreenColor(i.uv, _MainTex);
+                fixed4 col = applyScreenColor(i.uv, _MainTex, i.dist);
                 return col;
             }
             ENDCG
