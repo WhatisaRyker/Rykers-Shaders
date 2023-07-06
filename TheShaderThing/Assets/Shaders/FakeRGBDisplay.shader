@@ -54,6 +54,7 @@ Shader "RykerPack/FakeRGBDisplay"
             float _DistanceBlendingToggle;
             float _DistanceBlendingStart;
             float _DistanceBlendingEnd;
+            float _BlendValue;
 
             float _PixelDensity;
             float _Overdrive;
@@ -81,11 +82,11 @@ Shader "RykerPack/FakeRGBDisplay"
             fixed checkColor(half2 uvPoint, float blendValue, float xOffset, float yOffset, float xScale, float yScale)
             {
                 if(_DistanceBlendingToggle == 1) {
-                    blendValue = blendValue - _DistanceBlendingStart;
-                    blendValue = blendValue / _DistanceBlendingEnd;
+                    blendValue -= (_DistanceBlendingStart / sqrt(_PixelDensity));
+                    blendValue /= _DistanceBlendingEnd - (_DistanceBlendingStart / sqrt(_PixelDensity));
                     blendValue = clamp(blendValue, 0, 1);
                     xOffset = lerp(xOffset, 0, blendValue);
-                    xOffset = lerp(xOffset, 0, blendValue);
+                    yOffset = lerp(yOffset, 0, blendValue);
                     xScale = lerp(xScale, 1, blendValue);
                     yScale = lerp(yScale, 1, blendValue);
                 }
@@ -121,7 +122,7 @@ Shader "RykerPack/FakeRGBDisplay"
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-                o.dist = mul(worldPos, UNITY_MATRIX_V).z;
+                o.dist = distance(_WorldSpaceCameraPos, mul(unity_ObjectToWorld, v.vertex));
                 o.unUV = v.uv;
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 return o;
