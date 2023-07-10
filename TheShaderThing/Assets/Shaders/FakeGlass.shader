@@ -23,7 +23,7 @@
         [IntRange]_BlurDirections("Blur Directions", Range(1, 64)) = 16
         [IntRange]_BlurQuality("Blur Quality", Range(0, 100)) = 3
         [Range]_BlurRadius("Blur Radius", Range(0, 5)) = 4
-        [Header(Other)][Space(15)][Range]_IQR("IQR", Range(0, 1)) = 1
+        [Header(Other)][Space(15)][Range]_IQR("IQR", Range(-1, 1)) = 1
     }
     SubShader
     {
@@ -163,7 +163,7 @@
                 // compute world space view direction
                 o.viewDir = normalize(UnityWorldSpaceViewDir(worldPos));
                 o.worldNorm = mul( unity_ObjectToWorld, float4( v.normal, 0.0 ) ).xyz;
-                o.normal = mul(UNITY_MATRIX_V, v.normal);
+                o.normal = normalize( mul(float4(v.normal, 0.0), unity_WorldToObject));
                 o.grabPos = ComputeGrabScreenPos(o.pos);
                 return o;
             }
@@ -174,7 +174,7 @@
                 bump = normalize(bump); 
                 fixed3 norm = i.normal;
 
-                fixed4 DistNorm = i.grabPos + float4(norm * _IQR, 0);
+                fixed4 DistNorm = float4(refract(normalize(i.viewDir), normalize(norm), _IQR), 0);
                 fixed4 DistUV = i.grabPos + (bump * _Distortion);
 
                 DistUV = DistUV + DistNorm;
@@ -212,13 +212,13 @@
                 if(_UseTintColor == 1)
                     finalColor = finalColor * _GlassTint;
             
-                if(_UseFresnel == 1)
+                if(_UseFresnel == 1) {
                     if(_FresnelType == 0)
                         finalColor = min(finalColor, 1 - (pow(saturate(1 - dot(normalize(i.worldNorm), normalize(i.viewDir))), _FresnelPower) * _FresnelColor));
                     if(_FresnelType == 1) 
                         finalColor = finalColor + (pow(saturate(1 - dot(normalize(i.worldNorm), normalize(i.viewDir))), _FresnelPower) * _FresnelColor);
-
-
+                }
+                
                 return fixed4(finalColor, 1);
             }
             ENDCG

@@ -10,8 +10,7 @@ Material:
   m_Name: FakeRGB
   m_Shader: {fileID: 4800000, guid: a3760fb1e7dd643ffb1a1d49a1d012b0, type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _DISTANCEBLENDINGTOGGLE_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -33,7 +32,7 @@ Material:
     - _BluePixelOffsetY: -0.25
     - _DistanceBlendingEnd: 0.34
     - _DistanceBlendingStart: 0
-    - _DistanceBlendingToggle: 1
+    - _DistanceBlendingToggle: 0
     - _GreenPixelDimensionX: 0.475
     - _GreenPixelDimensionY: 0.475
     - _GreenPixelOffsetX: -0.25
