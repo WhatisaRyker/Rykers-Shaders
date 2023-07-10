@@ -133,11 +133,7 @@
             {
                 float Pi = 6.28318530718;
                 float3 output = ((hashOld33(seed.xyz)));
-                float xcoord = output.x * cos(output.y * Pi);
-                float ycoord = output.x * sin(output.y * Pi);
-                output = float3(xcoord, ycoord, 0) * (intensity / 100);
-                input.xyz = input.xyz + output;
-
+                input.xyz += float3(output.x * cos(output.y * Pi), output.x * sin(output.y * Pi), 0) * (intensity / 100);
                 return input;
             }
 
@@ -218,7 +214,7 @@
                     if(_FresnelType == 1) 
                         finalColor = finalColor + (pow(saturate(1 - dot(normalize(i.worldNorm), normalize(i.viewDir))), _FresnelPower) * _FresnelColor);
                 }
-                
+
                 return fixed4(finalColor, 1);
             }
             ENDCG
