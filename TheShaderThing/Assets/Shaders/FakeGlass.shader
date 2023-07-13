@@ -11,12 +11,12 @@
         [Header(Fresnel Effects)][Space(15)][MaterialToggle] _UseFresnel("Use Fresnel?", float) = 0
         _FresnelPower("Fresnel Power", float) = 0
         [HDR] _FresnelColor("Fresnel Color", Color) = (1,1,1,1)
-        [KeywordEnum(Darken, Add)]_FresnelType("Fresnel Color Application", int) = 0
+        [KeywordEnum(Add, Mul)]_FresnelType("Fresnel Color Application", int) = 0
         [Header(Random Square One Pass Blur)][Space(15)][MaterialToggle] _UseRandomBlur("Use Random Blur?", float) = 0
         [Range]_RandomBlurRadius("Random Blur Radius", Range(0, 10)) = 0.1
         [Header(Random Circle Blur)][Space(15)][MaterialToggle] _UseHighQualityBlur("Use High Quality Blur?", float) = 0
-        [IntRange]_BlurQualitySteps("Blur Quality Steps", Range(1, 1000)) = 4
-        [Range]_HQBlurRadius("High Quality Blur Radius", Range(0, 10)) = 1
+        [IntRange]_BlurQualitySteps("Blur Quality Steps", Range(1, 200)) = 4
+        [Range]_HQBlurRadius("High Quality Blur Radius", Range(0, 50)) = 1
         [Header(Procedural Circle Blur)][Space(15)][MaterialToggle] _UseBlur("Use Blur?", float) = 0
         //[MaterialToggle] _UseBlurTex("Use Noise Texture for blur?", float) = 0
         //_BlurTex("Blur Texture", 2D) = "bump" {}
@@ -106,7 +106,7 @@
                 // Blur calculations
                 for( float d =0.0; d < Pi; d += Pi/Directions) {
                     for(float i=1.0 / Quality; i <= 1.0; i += 1.0 / Quality) {
-	            		Color += tex2Dproj( Texture, uv + float4(cos(d),sin(d), 0, 0)*Radius*i) / (Quality * Directions);
+	            		Color += clamp(tex2Dproj( Texture, uv + float4(cos(d),sin(d), 0, 0)*Radius*i), 0, 1) / (Quality * Directions);
                     }
                 }	
                 return Color;
@@ -140,11 +140,13 @@
             float4 GetRandomHighQuality(float4 input, sampler2D _Texture, float4 seed) 
             {
                 float Pi = 6.28318530718; // Pi*2
-                float4 Color = tex2Dproj(_Texture, UNITY_PROJ_COORD(input)) / (_BlurQualitySteps + 1);
+                float steps = _BlurQualitySteps;
+                float blurRad = _HQBlurRadius;
+                float4 Color = clamp(tex2Dproj(_Texture, UNITY_PROJ_COORD(input)), 0, 1) / (steps + 1);
                 float4 uv = float4(0, 0, 0, 0);
-                for(float i = 0; i < _BlurQualitySteps; i++) {
-                    uv = betterblur(input, normalize(seed + i), _HQBlurRadius);
-                    Color += tex2Dproj(_Texture, uv) / _BlurQualitySteps;
+                for(float i = 0; i < steps; i++) {
+                    uv = betterblur(input, normalize(seed + i), blurRad);
+                    Color += clamp(tex2Dproj(_Texture, uv), 0, 1) / (steps + 1);
                 }
                 return Color;
             }
@@ -177,21 +179,25 @@
 
                 fixed4 refraction;
                 fixed4 refractionN;
-                if(_UseRandomBlur == 0 && _UseHighQualityBlur == 0)
+                if(_UseRandomBlur == 0 && _UseHighQualityBlur == 0 && _UseBlur == 0 ) {
                     refraction = tex2Dproj(_RenderTexture, UNITY_PROJ_COORD(DistUV));
                     refractionN = tex2Dproj(_RenderTexture, UNITY_PROJ_COORD(i.grabPos));
+                }
 
-                if(_UseRandomBlur == 1)
+                if(_UseRandomBlur == 1) {
                     refraction = tex2Dproj(_RenderTexture, UNITY_PROJ_COORD(randomblur(DistUV, _RandomBlurRadius)));
                     refractionN = tex2Dproj(_RenderTexture, UNITY_PROJ_COORD(randomblur(i.grabPos, _RandomBlurRadius)));
+                }
                     
-                if(_UseHighQualityBlur == 1)    
+                if(_UseHighQualityBlur == 1) {
                     refraction = GetRandomHighQuality(UNITY_PROJ_COORD(DistUV), _RenderTexture, i.pos);
                     refractionN = GetRandomHighQuality(UNITY_PROJ_COORD(i.grabPos), _RenderTexture, i.pos);
-
-                if(_UseBlur == 1)    
+                }
+                
+                if(_UseBlur == 1) {
                     refraction = ApplyBlur(_RenderTexture, UNITY_PROJ_COORD(DistUV));
                     refractionN = ApplyBlur(_RenderTexture, UNITY_PROJ_COORD(i.grabPos));
+                }
 
                 fixed refrFix = UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, UNITY_PROJ_COORD(DistUV)));
 
@@ -199,20 +205,24 @@
                          refraction = refractionN;
                 fixed4 tint = float4(0,0,0,0);
                 fixed3 finalColor = refraction.rgb;
-                if(_UseColorBias == 1)
+                if(_UseColorBias == 1) {
                     tint = tex2D(_ColorBiasTexture, i.colorBiasCoord) * _ColorBias;
                     finalColor = refraction.rgb + tint - (refraction.rgb * tint);
                     //finalColor = refraction.rgb + tint;
                     //finalColor = refraction.rgb * tint; mul
+                }
 
-                if(_UseTintColor == 1)
+                if(_UseTintColor == 1) {
                     finalColor = finalColor * _GlassTint;
+                }
             
                 if(_UseFresnel == 1) {
-                    if(_FresnelType == 0)
-                        finalColor = min(finalColor, 1 - (pow(saturate(1 - dot(normalize(i.worldNorm), normalize(i.viewDir))), _FresnelPower) * _FresnelColor));
-                    if(_FresnelType == 1) 
+                    if(_FresnelType == 0) {
                         finalColor = finalColor + (pow(saturate(1 - dot(normalize(i.worldNorm), normalize(i.viewDir))), _FresnelPower) * _FresnelColor);
+                    }
+                    if(_FresnelType == 1) {
+                        finalColor = finalColor * (pow(saturate(dot(normalize(i.worldNorm), normalize(i.viewDir))), _FresnelPower) * _FresnelColor);
+                    }
                 }
 
                 return fixed4(finalColor, 1);
