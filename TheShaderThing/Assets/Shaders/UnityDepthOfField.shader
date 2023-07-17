@@ -54,7 +54,7 @@ Shader "Unlit/DepthOfField"
                return UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, float2(0.5, 0.5)))
             }
 
-            float4 GetBlurAndColor(sampler2D texture, float depthWeight, float depthIntensity, float blurLeniency) 
+            float4 GetBlurAndColor(sampler2D texture, float depthWeight, float depthIntensity, float blurLeniency, float deadZone) 
             {
 
             }
@@ -69,12 +69,12 @@ Shader "Unlit/DepthOfField"
                 float Radius = _BlurRadius / 10; // BLUR SIZE (Radius)
                 // GAUSSIAN BLUR SETTINGS }}}
                 // Pixel colour
-                float4 Color = tex2Dproj(Texture, uv) / (Quality * Directions);
+                float4 Color = tex2Dproj(Texture, uv);
 
                 // Blur calculations
                 for( float d =0.0; d < Pi; d += Pi/Directions) {
                     for(float i=1.0 / Quality; i <= 1.0; i += 1.0 / Quality) {
-	            		Color += clamp(tex2Dproj( Texture, uv + float4(cos(d),sin(d), 0, 0)*Radius*i), 0, 1) / (Quality * Directions);
+	            		Color += clamp(tex2Dproj( Texture, uv + float4(cos(d),sin(d), 0, 0)*Radius*i), 0, 1);
                     }
                 }	
                 return Color;
