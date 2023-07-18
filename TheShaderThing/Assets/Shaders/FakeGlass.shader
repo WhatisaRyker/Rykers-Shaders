@@ -91,6 +91,12 @@
             float _BlurQuality;
             float _BlurRadius;
 
+            float NormalizedTriangle (float x)
+            {
+                float Pi = 3.141592653;
+                return ( ( Pi / 2 ) * ( asin( sin( x*Pi ) ) ) + 1) / 2;
+            }
+
             float4 ApplyBlur (sampler2D Texture, fixed4 uv)
             {
                     float Pi = 6.28318530718; // Pi*2
@@ -160,7 +166,7 @@
                 float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
                 // compute world space view direction
                 o.viewDir = normalize(UnityWorldSpaceViewDir(worldPos));
-                o.worldNorm = mul( unity_ObjectToWorld, float4( v.normal, 0.0 ) ).xyz;
+                o.worldNorm = UnityObjectToWorldNormal(v.normal);
                 o.normal = normalize( mul(float4(v.normal, 0.0), unity_WorldToObject));
                 o.grabPos = ComputeGrabScreenPos(o.pos);
                 return o;
@@ -172,7 +178,7 @@
                 bump = normalize(bump); 
                 fixed3 norm = i.normal;
 
-                fixed4 DistNorm = float4(refract(normalize(i.viewDir), normalize(norm), _IQR), 0);
+                fixed4 DistNorm = float4(refract(i.viewDir, normalize(i.worldNorm), _IQR), 0);
                 fixed4 DistUV = i.grabPos + (bump * _Distortion);
 
                 DistUV = DistUV + DistNorm;
