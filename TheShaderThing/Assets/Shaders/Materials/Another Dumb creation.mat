@@ -7,11 +7,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CubicShader
-  m_Shader: {fileID: 4800000, guid: 4857845b79d3849ffaeb8fbf90a15173, type: 3}
+  m_Name: Another Dumb creation
+  m_Shader: {fileID: 4800000, guid: b2962bf9897fe4863989d9b2e32367d7, type: 3}
   m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _DISTANCEBLENDINGTOGGLE_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -59,36 +58,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BluePixelDimensionX: 0.425
-    - _BluePixelDimensionY: 0.425
-    - _BluePixelOffsetX: -0.25
-    - _BluePixelOffsetY: -0.25
     - _BumpScale: 1
-    - _CubingScale: 122.1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DistanceBlendingEnd: 100
-    - _DistanceBlendingStart: 50
-    - _DistanceBlendingToggle: 1
     - _DstBlend: 0
+    - _Flatten: 0.01
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GreenPixelDimensionX: 0.475
-    - _GreenPixelDimensionY: 0.475
-    - _GreenPixelOffsetX: -0.25
-    - _GreenPixelOffsetY: 0.25
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _Overdrive: 0
     - _Parallax: 0.02
-    - _PixelDensity: 1
-    - _PixelHardness: 1
-    - _RedPixelDimensionX: 0.475
-    - _RedPixelDimensionY: 0.975
-    - _RedPixelOffsetX: 0.25
-    - _RedPixelOffsetY: 0
+    - _Size: -2.6
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
