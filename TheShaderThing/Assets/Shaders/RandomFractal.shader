@@ -2,7 +2,6 @@ Shader "RykerPack/RandomFractal"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
         _CubingScale ("Cubing Scale", float) = 1
         _Displacement ("Displacement Scale", float) = 1
         _TimeScale ("Time Scale", float) = 1
@@ -29,8 +28,6 @@ Shader "RykerPack/RandomFractal"
             float _CubingScale;
             float _Displacement;
             float _TimeScale;
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
             float2 direction[4]  = {
                 float2(0, 1),
                 float2(0, -1),
@@ -85,7 +82,7 @@ Shader "RykerPack/RandomFractal"
                 float2 originalPoint = closestPoint;
 
                 for(int i=0; i < 4; i++) {
-                    newPoint = originalPoint + ((Scales * direction[i]) / Scales);
+                    newPoint = originalPoint + ((Scales * direction[i]));
                     newPoint += ((frac(rand_2_10(newPoint)) - 0.5) * (_Displacement/500));
                     if(distance(newPoint, screenPosition) < distance(closestPoint, screenPosition)) {
                         closestPoint = newPoint;
@@ -97,7 +94,7 @@ Shader "RykerPack/RandomFractal"
 
             float3 maxSaturation(float3 colorValue) 
             {
-                colorValue = mix(colorValue.r, min(colorValue.g, colorValue.b)) - colorValue;
+                colorValue = colorValue - min(colorValue.r, min(colorValue.g, colorValue.b));
                 colorValue = (1 / max(colorValue.r, max(colorValue.g, colorValue.b))) * colorValue;
                 return colorValue;
             }
