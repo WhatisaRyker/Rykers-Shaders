@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Another Dumb creation
-  m_Shader: {fileID: 4800000, guid: b2962bf9897fe4863989d9b2e32367d7, type: 3}
+  m_Name: RandomFractal
+  m_Shader: {fileID: 4800000, guid: c4172a34333bd8f4abc8fea418ed8528, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -59,10 +59,11 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 1
+    - _CubingScale: -43.69
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
+    - _Displacement: -0.08
     - _DstBlend: 0
-    - _Flatten: 0.1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -70,10 +71,10 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Size: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TimeScale: 10
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
