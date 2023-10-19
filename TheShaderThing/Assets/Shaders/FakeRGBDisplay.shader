@@ -155,6 +155,10 @@ Shader "RykerPack/FakeRGBDisplay"
             #include "Lighting.cginc"
             #include "AutoLight.cginc"
             #include "UnityShadowLibrary.cginc"
+
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            
             struct v2f_shadow
             {
                 V2F_SHADOW_CASTER_NOPOS UNITY_POSITION(pos);
@@ -164,7 +168,6 @@ Shader "RykerPack/FakeRGBDisplay"
             v2f_shadow vert_shadow(appdata_tan v)
             {
                 v2f_shadow o;
-                v.vertex.xyz += GetWindNoise(v.texcoord, v.vertex);
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
@@ -174,7 +177,6 @@ Shader "RykerPack/FakeRGBDisplay"
             float4 frag_shadow(v2f_shadow i) : SV_Target
             {
                 fixed4 texcol = tex2D(_MainTex, i.uv);
-                clip(texcol.a - _Cutoff);
                 SHADOW_CASTER_FRAGMENT(i)
             }
             ENDCG

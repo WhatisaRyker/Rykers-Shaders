@@ -18,11 +18,13 @@
         [IntRange]_BlurQualitySteps("Blur Quality Steps", Range(1, 200)) = 4
         [Range]_HQBlurRadius("High Quality Blur Radius", Range(0, 50)) = 1
         [Header(Procedural Circle Blur)][Space(15)][MaterialToggle] _UseBlur("Use Blur?", float) = 0
-        //[MaterialToggle] _UseBlurTex("Use Noise Texture for blur?", float) = 0
-        //_BlurTex("Blur Texture", 2D) = "bump" {}
+        [MaterialToggle] _UseBlurTex("Use Noise Texture for blur?", float) = 0
+        _BlurTex("Blur Texture", 2D) = "bump" {}
         [IntRange]_BlurDirections("Blur Directions", Range(1, 64)) = 16
         [IntRange]_BlurQuality("Blur Quality", Range(0, 100)) = 3
         [Range]_BlurRadius("Blur Radius", Range(0, 5)) = 4
+        [Header(BlurSettings)][Space(15)][MaterialToggle] _UseDistanceBlur("Use distance weighting", int) = 1
+        [Range]_DistanceBlurWeighting("Distance blur weighting", Range(0, 1)) = 1
         [Header(Other)][Space(15)][Range]_IQR("IQR", Range(-1, 1)) = 1
     }
     SubShader
@@ -91,6 +93,12 @@
             float _BlurQuality;
             float _BlurRadius;
 
+            sampler2D _BlurTex;
+            float4 _BlurTex_ST;
+            int _UseDistanceBlur;
+            float _DistanceBlurWeighting;
+
+
             float NormalizedTriangle (float x)
             {
                 float Pi = 3.141592653;
@@ -107,12 +115,12 @@
                 float Radius = _BlurRadius / 10; // BLUR SIZE (Radius)
                 // GAUSSIAN BLUR SETTINGS }}}
                 // Pixel colour
-                float4 Color = tex2Dproj(Texture, uv) / (Quality * Directions);
+                float4 Color = tex2D(Texture, uv) / (Quality * Directions);
 
                 // Blur calculations
                 for( float d =0.0; d < Pi; d += Pi/Directions) {
                     for(float i=1.0 / Quality; i <= 1.0; i += 1.0 / Quality) {
-	            		Color += clamp(tex2Dproj( Texture, uv + float4(cos(d),sin(d), 0, 0)*Radius*i), 0, 1) / (Quality * Directions);
+	            		Color += clamp(tex2D( Texture, uv + float4(cos(d),sin(d), 0, 0)*Radius*i), 0, 1) / (Quality * Directions);
                     }
                 }	
                 return Color;
@@ -148,11 +156,16 @@
                 float Pi = 6.28318530718; // Pi*2
                 float steps = _BlurQualitySteps;
                 float blurRad = _HQBlurRadius;
-                float4 Color = clamp(tex2Dproj(_Texture, UNITY_PROJ_COORD(input)), 0, 1) / (steps + 1);
+
+                if(_UseDistanceBlur) {
+                    blurRad * UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, (input)));
+                }
+
+                float4 Color = clamp(tex2D(_Texture, input), 0, 1) / (steps + 1);
                 float4 uv = float4(0, 0, 0, 0);
                 for(float i = 0; i < steps; i++) {
                     uv = betterblur(input, normalize(seed + i), blurRad);
-                    Color += clamp(tex2Dproj(_Texture, uv), 0, 1) / (steps + 1);
+                    Color += clamp(tex2D(_Texture, uv), 0, 1) / (steps + 1);
                 }
                 return Color;
             }
@@ -177,35 +190,36 @@
                 fixed4 bump = fixed4( UnpackNormal(tex2D(_NoiseTex, i.textcoord)), 0);
                 bump = normalize(bump); 
                 fixed3 norm = i.normal;
+                float2 screenPosition = (i.grabPos.xy / i.grabPos.w);
 
                 fixed4 DistNorm = float4(refract(i.viewDir, normalize(i.worldNorm), _IQR), 0);
-                fixed4 DistUV = i.grabPos + (bump * _Distortion);
+                fixed2 DistUV = screenPosition + (bump * _Distortion);
 
                 DistUV = DistUV + DistNorm;
 
                 fixed4 refraction;
                 fixed4 refractionN;
                 if(_UseRandomBlur == 0 && _UseHighQualityBlur == 0 && _UseBlur == 0 ) {
-                    refraction = tex2Dproj(_RenderTexture, UNITY_PROJ_COORD(DistUV));
-                    refractionN = tex2Dproj(_RenderTexture, UNITY_PROJ_COORD(i.grabPos));
+                    refraction = tex2D(_RenderTexture, UNITY_PROJ_COORD(DistUV));
+                    refractionN = tex2D(_RenderTexture, UNITY_PROJ_COORD(screenPosition));
                 }
 
                 if(_UseRandomBlur == 1) {
-                    refraction = tex2Dproj(_RenderTexture, UNITY_PROJ_COORD(randomblur(DistUV, _RandomBlurRadius)));
-                    refractionN = tex2Dproj(_RenderTexture, UNITY_PROJ_COORD(randomblur(i.grabPos, _RandomBlurRadius)));
+                    refraction = tex2D(_RenderTexture, UNITY_PROJ_COORD(randomblur(DistUV, _RandomBlurRadius)));
+                    refractionN = tex2D(_RenderTexture, UNITY_PROJ_COORD(randomblur(screenPosition, _RandomBlurRadius)));
                 }
                     
                 if(_UseHighQualityBlur == 1) {
                     refraction = GetRandomHighQuality(UNITY_PROJ_COORD(DistUV), _RenderTexture, i.pos);
-                    refractionN = GetRandomHighQuality(UNITY_PROJ_COORD(i.grabPos), _RenderTexture, i.pos);
+                    refractionN = GetRandomHighQuality(UNITY_PROJ_COORD(screenPosition), _RenderTexture, i.pos);
                 }
                 
                 if(_UseBlur == 1) {
                     refraction = ApplyBlur(_RenderTexture, UNITY_PROJ_COORD(DistUV));
-                    refractionN = ApplyBlur(_RenderTexture, UNITY_PROJ_COORD(i.grabPos));
+                    refractionN = ApplyBlur(_RenderTexture, UNITY_PROJ_COORD(screenPosition));
                 }
 
-                fixed refrFix = UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, UNITY_PROJ_COORD(DistUV)));
+                fixed refrFix = UNITY_SAMPLE_DEPTH(tex2D(_CameraDepthTexture, UNITY_PROJ_COORD(DistUV)));
 
                 if(LinearEyeDepth(refrFix) < i.grabPos.z)
                          refraction = refractionN;
