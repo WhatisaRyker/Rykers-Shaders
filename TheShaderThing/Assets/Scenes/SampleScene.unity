@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028326, g: 0.22571333, b: 0.30692202, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -439,7 +439,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_LocalPosition.y
@@ -447,7 +447,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_LocalRotation.w
@@ -484,14 +484,14 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: c0df721ff0d714909953c5052a1a453f, type: 2}
+      objectReference: {fileID: 2100000, guid: 66a26616cead642bab58ec95837be374, type: 2}
     - target: {fileID: 919132149155446097, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_Name
       value: cirno_low
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1151388028547126963, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_LocalRotation.w

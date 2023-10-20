@@ -91,6 +91,7 @@ Shader "RykerPack/OKColor/GrabPassPosterization"
                 prod.r = float(prod.r + prod.g + prod.b);
                 float4 col = float4(prod.r, prod.r, prod.r, 1);
 
+                
                 col.rgb = getNumColor(col);
 
                 col.rgb = col.rgb + _DitherSpread * dither;

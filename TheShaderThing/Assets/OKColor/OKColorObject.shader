@@ -96,7 +96,7 @@ Shader "RykerPack/OKColor/ObjectPosterization"
                 float dither = GetBayer8(screenPosition.x * _ScreenParams.x/_DitherScale, screenPosition.y * _ScreenParams.y/_DitherScale);
                 // sample the texture
                 float3 prod = tex2D(_MainTex, i.uv).rgb * float3(0.2126, 0.7152, 0.0722);
-                prod.r = float(prod.r + prod.g + prod.g);
+                prod.r = float(prod.r + prod.g + prod.b);
                 float4 col = float4(prod.r, prod.r, prod.r, 1);
                 col *= ((i.diff - 1) * _ShadowPower) + 1;
                 //float dith = tex2D(_DitherTex, screenPosition);
