@@ -6,6 +6,7 @@ using UnityEngine;
 public class OKColorPostProcess : MonoBehaviour
 {
     private Material OKColor;
+    [SerializeField ] Texture UseTex;
     [SerializeField] Shader OKShader;
     [Range(1, 16)]
     public int NumberOfColors = 8;
@@ -49,6 +50,10 @@ public class OKColorPostProcess : MonoBehaviour
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        Graphics.Blit(source, destination, OKColor);
+        if(UseTex == null) {
+            Graphics.Blit(source, destination, OKColor);
+        } else {
+            Graphics.Blit(UseTex, destination, OKColor);
+        }
     }
 }

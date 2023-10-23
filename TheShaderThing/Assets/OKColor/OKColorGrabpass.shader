@@ -1,4 +1,4 @@
-Shader "RykerPack/OKColor/Volume Posterization"
+Shader "RykerPack/OKColor/Grabpass Posterization"
 {
     Properties
     {
@@ -14,10 +14,9 @@ Shader "RykerPack/OKColor/Volume Posterization"
     SubShader
     {
         Tags { "RenderType"="Overlay" "Queue"="Overlay+50" }
-        ZTest Off
         ZWrite Off
         Blend One OneMinusSrcAlpha
-        Cull Front
+        Cull Off
 
         GrabPass {
             "_ScreenTex"

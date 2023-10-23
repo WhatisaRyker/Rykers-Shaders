@@ -1,4 +1,4 @@
-Shader "RykerPack/OKColor/ObjectPosterization"
+Shader "RykerPack/OKColor/Object Posterization"
 {
     Properties
     {
@@ -99,11 +99,8 @@ Shader "RykerPack/OKColor/ObjectPosterization"
                 prod.r = float(prod.r + prod.g + prod.b);
                 float4 col = float4(prod.r, prod.r, prod.r, 1);
                 col *= ((i.diff - 1) * _ShadowPower) + 1;
-                //float dith = tex2D(_DitherTex, screenPosition);
-    	        //float mixAmt = frac(col) < dith;
-                //float3 c1 = getNumColor(col);
-                //float3 c2 = getNumColor(min(col + (1 / _NumOfColors), 1));
-                //col.rgb = lerp(c1, c2, mixAmt);
+
+                
                 col.rgb = getNumColor(col);
 
                 col.rgb = col.rgb + _DitherSpread * dither;
