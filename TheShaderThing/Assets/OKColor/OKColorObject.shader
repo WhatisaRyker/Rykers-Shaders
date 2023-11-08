@@ -12,6 +12,7 @@ Shader "RykerPack/OKColor/Object Posterization"
         _ChromaOffset("Offset of range available to chroma", Range(0, 1)) = 0.568
         _DitherSpread("Dither Spread", Range(0, 1)) = 0.038
         [IntRange]_DitherScale("Dither Scale", Range(0,16)) = 3
+        [MaterialToggle]_UseShadow("Use Shadow?", int) = 1
         _ShadowPower("Shadow Power", Range(0, 1)) = 0.5
     }
     SubShader
@@ -68,6 +69,7 @@ Shader "RykerPack/OKColor/Object Posterization"
             float _DitherSpread;
             int _DitherScale;
             float _ShadowPower;
+            int _UseShadow;
 
             v2f vert (appdata v)
             {
@@ -76,10 +78,14 @@ Shader "RykerPack/OKColor/Object Posterization"
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.grabPos = ComputeGrabScreenPos(o.vertex);
                 half3 worldNormal = UnityObjectToWorldNormal(v.normal);
-                half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-                o.diff = nl * _LightColor0;
 
-                o.diff.rgb += ShadeSH9(half4(worldNormal,1));
+                if(_UseShadow) {
+                    half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
+                    o.diff = nl * _LightColor0;
+
+                    o.diff.rgb += ShadeSH9(half4(worldNormal,1));
+                }
+                
                 return o;
             }
 
@@ -98,9 +104,20 @@ Shader "RykerPack/OKColor/Object Posterization"
                 float3 prod = tex2D(_MainTex, i.uv).rgb * float3(0.2126, 0.7152, 0.0722);
                 prod.r = float(prod.r + prod.g + prod.b);
                 float4 col = float4(prod.r, prod.r, prod.r, 1);
+<<<<<<< Updated upstream
                 col *= ((i.diff - 1) * _ShadowPower) + 1;
 
                 
+=======
+                if(_UseShadow) {
+                    col *= ((i.diff - 1) * _ShadowPower) + 1;
+                }
+                //float dith = tex2D(_DitherTex, screenPosition);
+    	        //float mixAmt = frac(col) < dith;
+                //float3 c1 = getNumColor(col);
+                //float3 c2 = getNumColor(min(col + (1 / _NumOfColors), 1));
+                //col.rgb = lerp(c1, c2, mixAmt);
+>>>>>>> Stashed changes
                 col.rgb = getNumColor(col);
 
                 col.rgb = col.rgb + _DitherSpread * dither;
