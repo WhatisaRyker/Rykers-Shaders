@@ -5,6 +5,11 @@ Shader "RykerPack/DitherShadow"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        [Header(HDR Settings)][Space(15)][MaterialToggle]_UseOutline("Use HDR?", int) = 1
+        [HDR]_HDRColor("HDR Color", Color) = (1, 1, 1, 1)
+        [MaterialToggle]_UseBaseColor("Use base color as hdr color?", int) = 1
+        [MaterialToggle]_UseColorTint("Use HDR color as tint?", int) = 1
+
         [Header(Shadow Settings)][Space(15)][MaterialToggle]_UseShadows("Use shadows?", int) = 1
         [MaterialToggle]_UseDither("Use dither on shadows?", int) = 1
         _DitherSpread("Dither Spread", Range(0, 0.5)) = 0.18
@@ -83,10 +88,9 @@ Shader "RykerPack/DitherShadow"
 
             int _UseDither;
             int _DitherScale;
+            int _UseShadows;
             float _DitherSpread;
             float _ShadowPower;
-
-
 
             struct appdata
             {
@@ -99,8 +103,8 @@ Shader "RykerPack/DitherShadow"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-                float4 diff : TEXCOORD1;
                 float4 grabPos : TEXCOORD2;
+                float3 worldNormal : TEXCOORD3;
             };
 
             v2f vert (appdata v)
@@ -111,12 +115,8 @@ Shader "RykerPack/DitherShadow"
                 o.grabPos = ComputeGrabScreenPos(o.vertex);
                 
 
-                float3 worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 
-                half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-                o.diff = nl * _LightColor0;
-                o.diff.rgb += ShadeSH9(half4(worldNormal, 1));
-
                 return o;
             }
 
@@ -125,9 +125,14 @@ Shader "RykerPack/DitherShadow"
                 float2 screenPosition = i.grabPos.xy / i.grabPos.w;
                 float dither = GetBayer8(screenPosition.x * _ScreenParams.x/_DitherScale, screenPosition.y * _ScreenParams.y/_DitherScale);
 
-                float3 diff = i.diff.rgb * float3(0.2126, 0.7152, 0.0722);
+                half nl = max(0, dot(i.worldNormal, _WorldSpaceLightPos0.xyz));
+                float4 diff = nl * _LightColor0;
+                diff.rgb += ShadeSH9(half4(i.worldNormal, 1));
+
+                diff.rgb *= float3(0.2126, 0.7152, 0.0722);
                 fixed shade = float(diff.r + diff.g + diff.b);
                 shade = ((shade - 1) * _ShadowPower) + 1;
+
                 if(_UseDither) 
                 {
                     shade += _DitherSpread * dither;
@@ -135,7 +140,10 @@ Shader "RykerPack/DitherShadow"
                 }
 
                 fixed4 col = tex2D(_MainTex, i.uv);
-                col *= shade * _LightColor0;
+                if(_UseShadows) 
+                {
+                    col *= shade * _LightColor0;
+                }
                 return col;
             }
             ENDCG

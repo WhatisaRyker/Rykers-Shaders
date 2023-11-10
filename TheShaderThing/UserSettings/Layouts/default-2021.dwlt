@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1706.6666
     height: 917.7778
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Project
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 200}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 94
+  controlID: 41
 --- !u!114 &3
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
+  m_Name: ProjectBrowser
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -124,9 +124,9 @@ MonoBehaviour:
   m_MaxSize: {x: 10001, y: 10021}
   m_ActualView: {fileID: 13}
   m_Panes:
-  - {fileID: 13}
   - {fileID: 18}
-  m_Selected: 0
+  - {fileID: 13}
+  m_Selected: 1
   m_LastSelected: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 200}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 95
+  controlID: 42
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -248,7 +248,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 96
+  controlID: 97
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -348,22 +348,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/SampleModels/Fumo
+    - Assets/DitherShadow
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/SampleModels/Fumo
+  - Assets/DitherShadow
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\Ryker\Documents\GitHub\Rykers-Shaders\TheShaderThing
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: d6570000
-    m_LastClickedID: 22486
-    m_ExpandedIDs: 000000009e570000a857000000ca9a3bffffff7f
+    m_SelectedIDs: b0570000
+    m_LastClickedID: 22448
+    m_ExpandedIDs: 00000000a8570000b257000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -391,7 +391,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000009e570000
+    m_ExpandedIDs: 00000000a8570000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -479,7 +479,7 @@ MonoBehaviour:
   m_ObjectsLockedBeforeSerialization: []
   m_InstanceIDsLockedBeforeSerialization: 
   m_PreviewResizer:
-    m_CachedPref: 160
+    m_CachedPref: 569
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1
@@ -806,9 +806,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 1.8344613, y: 0.9840114, z: -0.012076762}
+    m_Target: {x: 2.4714305, y: 0.35990226, z: 0.42424887}
     speed: 2
-    m_Value: {x: 1.8344613, y: 0.9840114, z: -0.012076762}
+    m_Value: {x: 2.4714305, y: 0.35990226, z: 0.42424887}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -855,9 +855,9 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.032151904, y: -0.82777995, z: 0.5580481, w: -0.047647677}
+    m_Target: {x: 0.041536734, y: -0.95168614, z: 0.26509818, w: 0.14918368}
     speed: 2
-    m_Value: {x: -0.034351468, y: -0.8217534, z: 0.566625, w: -0.04977429}
+    m_Value: {x: 0.041139767, y: -0.9519257, z: 0.2651649, w: 0.1477586}
   m_Size:
     m_Target: 0.24124284
     speed: 2
