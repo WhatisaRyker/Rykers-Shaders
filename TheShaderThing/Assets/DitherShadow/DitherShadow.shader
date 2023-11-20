@@ -5,8 +5,9 @@ Shader "RykerPack/DitherShadow"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        [Header(HDR Settings)][Space(15)][MaterialToggle]_UseOutline("Use HDR?", int) = 1
+        [Header(HDR Settings)][Space(15)][MaterialToggle]_UseHDR("Use HDR?", int) = 1
         [HDR]_HDRColor("HDR Color", Color) = (1, 1, 1, 1)
+        _HDRMask("HDR Mask", 2D) = "white" {}
         [MaterialToggle]_UseBaseColor("Use base color as hdr color?", int) = 1
         [MaterialToggle]_UseColorTint("Use HDR color as tint?", int) = 1
 
@@ -19,7 +20,6 @@ Shader "RykerPack/DitherShadow"
         [Header(Outline Settings)][Space(15)][MaterialToggle]_UseOutline("Use outline?", int) = 1
         _OutlineWidth("Outline width", Range(0.0001, 0.1)) = 0.02
         [HDR]_OutlineColor("Outline Color", Color) = (1, 1, 1, 1)
-
     }
     SubShader
     {
@@ -81,6 +81,7 @@ Shader "RykerPack/DitherShadow"
              
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            sampler2D _HDRMask;
 
             uniform float4 _LightColor;
 
@@ -89,8 +90,12 @@ Shader "RykerPack/DitherShadow"
             int _UseDither;
             int _DitherScale;
             int _UseShadows;
+            int _UseHDR;
+            int _UseBaseColor;
+            int _UseColorTint;
             float _DitherSpread;
             float _ShadowPower;
+            float4 _HDRColor;
 
             struct appdata
             {
@@ -140,9 +145,23 @@ Shader "RykerPack/DitherShadow"
                 }
 
                 fixed4 col = tex2D(_MainTex, i.uv);
+                fixed4 ogCol = col;
+                fixed4 HDR = fixed4(1, 1, 1, 1);
+
                 if(_UseShadows) 
                 {
                     col *= shade * _LightColor0;
+                }
+
+                if(_UseHDR)
+                {
+                    HDR.rgb = lerp(_HDRColor.rgb, ogCol, _UseBaseColor);
+                    HDR.rgb = lerp(HDR, _HDRColor.rgb * ogCol, _UseColorTint);
+
+                    HDR.a = _HDRColor.a;
+                    float4 colorMask = tex2D(_HDRMask, i.uv);
+                    
+                    col = lerp(col, HDR, colorMask);
                 }
                 return col;
             }
