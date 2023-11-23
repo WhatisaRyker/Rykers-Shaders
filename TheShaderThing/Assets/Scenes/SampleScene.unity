@@ -272,7 +272,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 66a26616cead642bab58ec95837be374, type: 2}
+  - {fileID: 2100000, guid: 6419cfadbe4465b4393c2d34cd432fc9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -484,7 +484,7 @@ PrefabInstance:
     - target: {fileID: -7635826562936255635, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 66a26616cead642bab58ec95837be374, type: 2}
+      objectReference: {fileID: 2100000, guid: 6419cfadbe4465b4393c2d34cd432fc9, type: 2}
     - target: {fileID: 919132149155446097, guid: 23e6e781e709b5f40821e4b07082e853, type: 3}
       propertyPath: m_Name
       value: cirno_low
@@ -752,7 +752,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 66a26616cead642bab58ec95837be374, type: 2}
+  - {fileID: 2100000, guid: 6419cfadbe4465b4393c2d34cd432fc9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

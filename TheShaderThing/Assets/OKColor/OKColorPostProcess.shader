@@ -56,8 +56,10 @@ Shader "Hidden/OKColor/PostProcess"
 
             fixed4 frag (v2f_img i) : COLOR
             {
-                float2 screenPosition = i.uv;
-                float dither = GetBayer8(screenPosition.x * _ScreenParams.x/_DitherScale, screenPosition.y * _ScreenParams.y/_DitherScale);
+                float2 screenPosition = i.uv.xy;
+                screenPosition = screenPosition.xy * _ScreenParams.xy;
+                screenPosition.x /= IsStereo(); 
+                float dither = GetBayer8(screenPosition.x /_DitherScale, screenPosition.y/_DitherScale);
                 // sample the texture
                 float3 prod = tex2D(_MainTex, screenPosition).rgb * float3(0.2126, 0.7152, 0.0722);
                 prod.r = float(prod.r + prod.g + prod.b);

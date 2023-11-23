@@ -81,7 +81,8 @@ Shader "RykerPack/OKColor/Object Posterization"
 
                 if(_UseShadow) {
                     half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-                    o.diff = nl * _LightColor0;
+                    //o.diff = nl * _LightColor0;
+                    o.diff = nl;
 
                     o.diff.rgb += ShadeSH9(half4(worldNormal,1));
                 }
@@ -99,25 +100,16 @@ Shader "RykerPack/OKColor/Object Posterization"
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 screenPosition = i.grabPos.xy / i.grabPos.w;
-                float dither = GetBayer8(screenPosition.x * _ScreenParams.x/_DitherScale, screenPosition.y * _ScreenParams.y/_DitherScale);
+                screenPosition = screenPosition.xy * _ScreenParams.xy;
+                screenPosition.x /= IsStereo(); 
+                float dither = GetBayer8(screenPosition.x /_DitherScale, screenPosition.y/_DitherScale);
                 // sample the texture
                 float3 prod = tex2D(_MainTex, i.uv).rgb * float3(0.2126, 0.7152, 0.0722);
                 prod.r = float(prod.r + prod.g + prod.b);
                 float4 col = float4(prod.r, prod.r, prod.r, 1);
-<<<<<<< Updated upstream
-                col *= ((i.diff - 1) * _ShadowPower) + 1;
+                if(_UseShadow) col *= ((i.diff - 1) * _ShadowPower) + 1;
 
                 
-=======
-                if(_UseShadow) {
-                    col *= ((i.diff - 1) * _ShadowPower) + 1;
-                }
-                //float dith = tex2D(_DitherTex, screenPosition);
-    	        //float mixAmt = frac(col) < dith;
-                //float3 c1 = getNumColor(col);
-                //float3 c2 = getNumColor(min(col + (1 / _NumOfColors), 1));
-                //col.rgb = lerp(c1, c2, mixAmt);
->>>>>>> Stashed changes
                 col.rgb = getNumColor(col);
 
                 col.rgb = col.rgb + _DitherSpread * dither;
